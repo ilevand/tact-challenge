@@ -19,15 +19,16 @@ message(0x44) Refund {
 }
 
 contract Task2 with Deployable {
-  admin: Address;
+    admin: Address;
+    init(admin: Address){
+        self.admin = admin;
+    }
 
-  init(admin: Address) {
-    self.admin = admin;
-  }
-  
-  receive(msg: Refund) {
-  }
+    receive(msg: Refund){
+        send(SendParameters{to: msg.sender, value: 0, mode: SendRemainingBalance + SendIgnoreErrors});
+    }
 
-  receive(msg: Slice) {
-  }
+    receive(msg: Slice){ 
+        send(SendParameters{to: self.admin, value: 0, mode: SendRemainingBalance + SendIgnoreErrors});
+    }
 }
