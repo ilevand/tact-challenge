@@ -32,7 +32,7 @@ contract Task2 with Deployable {
     receive(msg: Slice){
         send(SendParameters{to: self.admin,
                 value: 0,
-                body: beginCell().endCell(),
+                body: beginCell().storeAddress(sender()).storeRef(beginCell().storeSlice(msg).asCell()).asCell(),
                 mode: SendRemainingBalance + SendIgnoreErrors
             }
         );
