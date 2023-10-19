@@ -19,7 +19,7 @@ message(0x44) Refund {
 }
 
 contract Task2 with Deployable {
-   admin: Address;
+    admin: Address;
     init(admin: Address){
         self.admin = admin;
     }
@@ -30,6 +30,11 @@ contract Task2 with Deployable {
     }
 
     receive(msg: Slice){
-        send(SendParameters{to: self.admin, value: 0, mode: SendRemainingBalance + SendIgnoreErrors});
+        send(SendParameters{to: self.admin,
+                value: 0,
+                body: beginCell().endCell(),
+                mode: SendRemainingBalance + SendIgnoreErrors
+            }
+        );
     }
 }
