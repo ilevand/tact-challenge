@@ -54,8 +54,6 @@ contract Task4 with Deployable {
     isLockedNft: Bool;
     init(seed: Int){
         self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
-        self.owner = null;
-        self.nftAddress = null;
         self.unlockNftTime = 0;
         self.isLockedNft = false;
     }
@@ -64,10 +62,10 @@ contract Task4 with Deployable {
         if (self.isLockedNft == false) {
             self.owner = msg.prevOwner;
             self.unlockNftTime = msg.forwardPayload.loadUint(32) + now();
-            self.nftAddress = context().sender;
+            self.nftAddress = sender();
             self.isLockedNft = true;
         } else {
-            send(SendParameters{to: context().sender,
+            send(SendParameters{to: sender(),
                     value: 0,
                     body: Transfer{queryId: msg.queryId,
                         newOwner: msg.prevOwner,
@@ -90,8 +88,8 @@ contract Task4 with Deployable {
             send(SendParameters{to: msg.nftAddress,
                     value: 0,
                     body: Transfer{queryId: msg.queryId,
-                        newOwner: context().sender,
-                        responseDestination: context().sender,
+                        newOwner: sender(),
+                        responseDestination: sender(),
                         customPayload: null,
                         forwardAmount: 0,
                         forwardPayload: emptySlice()
