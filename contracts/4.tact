@@ -49,13 +49,13 @@ message NftWithdrawal {
 contract Task4 with Deployable {
     unlockNftTime: Int as uint32;
     seed: Int as uint128;
-    nftAddress: Address;
-    owner: Address;
+    nftAddress: Address?;
+    owner: Address?;
     isLockedNft: Bool;
     init(seed: Int){
         self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
-        self.owner = sender();
-        self.nftAddress = sender();
+        self.owner = null;
+        self.nftAddress = null;
         self.unlockNftTime = 0;
         self.isLockedNft = false;
     }
@@ -71,7 +71,7 @@ contract Task4 with Deployable {
                     value: context().value,
                     body: Transfer{queryId: 0,
                         newOwner: msg.prevOwner,
-                        responseDestination: sender(),
+                        responseDestination: myAddress(),
                         customPayload: emptyCell(),
                         forwardAmount: 0,
                         forwardPayload: msg.forwardPayload
@@ -89,7 +89,7 @@ contract Task4 with Deployable {
                 value: 0,
                 body: Transfer{queryId: msg.queryId,
                     newOwner: context().sender,
-                    responseDestination: sender(),
+                    responseDestination: myAddress(),
                     customPayload: emptyCell(),
                     forwardAmount: 0,
                     forwardPayload: emptySlice()
