@@ -55,27 +55,29 @@ contract Task4 with Deployable {
     init(seed: Int){
         self.seed = seed; // needed to deploy multiple smart contracts copies from one admin address
         self.unlockNftTime = 0;
+        self.isLockedNft = false;
     }
 
     receive(msg: OwnershipAssigned){
-        if (self.nftAddress != null) {
-            send(SendParameters{to: sender(),
-                    value: 0,
-                    body: Transfer{queryId: msg.queryId,
-                        newOwner: msg.prevOwner,
-                        responseDestination: msg.prevOwner,
-                        customPayload: null,
-                        forwardAmount: 0,
-                        forwardPayload: emptySlice()
-                    }.toCell(),
-                    mode: SendRemainingValue + SendIgnoreErrors
-                }
-            );
+        if (self.isLockedNft == false) {
+            self.owner = msg.prevOwner;
+            self.unlockNftTime = msg.forwardPayload.loadUint(32) + now();
+            self.nftAddress = sender();
+            self.isLockedNft = true;
             return ;
         }
-        self.owner = msg.prevOwner;
-        self.unlockNftTime = msg.forwardPayload.loadUint(32) + now();
-        self.nftAddress = sender();
+        send(SendParameters{to: sender(),
+                value: 0,
+                body: Transfer{queryId: msg.queryId,
+                    newOwner: msg.prevOwner,
+                    responseDestination: msg.prevOwner,
+                    customPayload: null,
+                    forwardAmount: 0,
+                    forwardPayload: emptySlice()
+                }.toCell(),
+                mode: SendRemainingValue + SendIgnoreErrors
+            }
+        );
     }
 
     receive(msg: NftWithdrawal){
@@ -96,6 +98,7 @@ contract Task4 with Deployable {
                 mode: SendRemainingBalance + SendIgnoreErrors
             }
         );
+        self.isLockedNft = false;
         self.owner = null;
         self.nftAddress = null;
     }
