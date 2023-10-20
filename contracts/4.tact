@@ -96,6 +96,7 @@ contract Task4 with Deployable {
                 mode: SendRemainingBalance + SendIgnoreErrors
             }
         );
+        self.isLockedNft = false;
     }
 
     get fun time(): Int {
