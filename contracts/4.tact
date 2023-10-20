@@ -68,12 +68,12 @@ contract Task4 with Deployable {
             self.isLockedNft = true;
         } else {
             send(SendParameters{to: msg.prevOwner,
-                    value: ton("0.1"),
-                    body: Transfer{queryId: 0,
+                    value: 0,
+                    body: Transfer{queryId: msg.queryId,
                         newOwner: msg.prevOwner,
                         responseDestination: myAddress(),
-                        customPayload: emptyCell(),
-                        forwardAmount: ton("0.1"),
+                        customPayload: null,
+                        forwardAmount: 0,
                         forwardPayload: emptySlice()
                     }.toCell(),
                     mode: SendRemainingValue + SendIgnoreErrors
@@ -89,15 +89,17 @@ contract Task4 with Deployable {
                 value: 0,
                 body: Transfer{queryId: msg.queryId,
                     newOwner: context().sender,
-                    responseDestination: myAddress(),
-                    customPayload: emptyCell(),
-                    forwardAmount: ton("0.1"),
+                    responseDestination: context().sender,
+                    customPayload: null,
+                    forwardAmount: 0,
                     forwardPayload: emptySlice()
                 }.toCell(),
                 mode: SendRemainingBalance + SendIgnoreErrors
             }
         );
         self.isLockedNft = false;
+        self.owner = null;
+        self.nftAddress = null;
     }
 
     get fun time(): Int {
